@@ -1,0 +1,17 @@
+/build
+/CMakeFiles
+/.vscode
+CMakeCache.txt
+CMakeLists.txt.user
+Makefile*
+open_license_service
+packet.txt
+test_client
+*.o
+*.cmake
+*.make
+*.internal
+*.*cache
+*.marks
+*.pc
+*.a
