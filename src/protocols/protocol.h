@@ -9,8 +9,7 @@
 class Protocol
 {
 public:
-    virtual void receive() = 0;
-    virtual void receive_command(const CommandPtr command) = 0;
+    virtual CommandPtr receive() = 0;
     virtual std::string Serialize(const CommandPtr command) = 0;
 };
 

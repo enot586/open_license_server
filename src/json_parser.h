@@ -25,7 +25,7 @@ public:
 
     JsonParser();
 
-    bool parse(char ch);
+    void parse(char ch);
 
     const CommandParams& get_ref() const { return m_params; }
     CommandParams get() const { return m_params; }

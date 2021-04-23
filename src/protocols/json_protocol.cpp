@@ -9,7 +9,7 @@ JsonProtocol::JsonProtocol(ip::tcp::socket& socket):
 
 }
 
-void JsonProtocol::receive()
+CommandPtr JsonProtocol::receive()
 {
     std::vector<char> receive_buffer(1024);
 
@@ -21,7 +21,7 @@ void JsonProtocol::receive()
             );
 
         if(ec) {
-            if(ec.value() == boost::asio::error::eof){
+            if(ec.value() == boost::asio::error::eof) {
                 break;
             } else {
                 std::cout << "Read data error:" << ec << "\n";
@@ -33,48 +33,19 @@ void JsonProtocol::receive()
             continue;
         }
 
-        handle_received_bytes(receive_buffer);
-    }
-}
+        for (auto& ch : receive_buffer) {
+            m_jp.parse(ch);
 
-void JsonProtocol::handle_received_bytes(const std::vector<char>& recv_buffer)
-{
-    for (auto& ch : recv_buffer) {
-        m_jp.parse(ch);
-
-        if( m_jp.is_finished() ) {
-            std::cout << "Packet has been recevied" << "\n";
-            receive_command( CommandFactory::create( m_jp.get_ref() ) );
-            m_jp.reset();
+            if( m_jp.is_finished() ) {
+                std::cout << "Packet has been recevied" << "\n";
+                auto request = CommandFactory::create( m_jp.get_ref() );
+                m_jp.reset();
+                return request;
+            }
         }
     }
-}
 
-void JsonProtocol::receive_command(const CommandPtr p_command)
-{
-    boost::system::error_code wec{};
-    size_t n = 0;
-
-    if ( auto p_response = p_command->execute() ) {
-        auto ser_response = Serialize(p_response);
-        n = m_socket.write_some(
-                    boost::asio::buffer(ser_response, ser_response.size() ),
-                    wec
-            );
-    } else {
-        ResponsePtr err_response = std::make_shared<Response>(
-                        CommandParams({{ "status", std::to_string(CommandStatus::ERROR) }})
-                    );
-        auto ser_err = Serialize(err_response);
-        n = m_socket.write_some(
-                    boost::asio::buffer(ser_err, ser_err.size() ),
-                    wec
-        );
-    }
-
-    if (!n) {
-        std::cout << "Write data error:" << wec << "\n";
-    }
+    return {};
 }
 
 std::string JsonProtocol::Serialize(const CommandPtr p_command)

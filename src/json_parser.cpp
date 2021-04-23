@@ -9,7 +9,7 @@ JsonParser::JsonParser() :
     m_value.reserve(1024);
 }
 
-bool JsonParser::parse(char ch)
+void JsonParser::parse(char ch)
 {
     switch(m_parser_state)
     {

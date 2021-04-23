@@ -12,14 +12,14 @@ io_service service;
 
 int main()
 {
-    cout << "Server start" << "\n";
+    cout << "Server start" << "\n" << flush;
 
     Communicator cm(service, "127.0.0.1", 2001);
 
-    do {
-        cm.handle_client();
-    } while(true);
+    cm.handle_client();
 
-    cout << "Server is down" << "\n";
+    service.run();
+
+    cout << "Server is down" << "\n" << flush;
     return 0;
 }

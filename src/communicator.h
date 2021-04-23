@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <memory>
 
 #include <boost/asio.hpp>
 
@@ -21,8 +22,13 @@ public:
 
     void handle_client();
 
+protected:
+    void process(const CommandPtr p_command);
+
 private:
     io_service& m_service;
     ProtocolPtr m_protocol;
     ip::tcp::endpoint m_ep;
+    shared_ptr<ip::tcp::socket> m_socket;
+    shared_ptr<ip::tcp::acceptor> m_acceptor;
 };

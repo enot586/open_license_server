@@ -15,8 +15,7 @@ public:
     JsonProtocol(ip::tcp::socket& socket);
 
     // Protocol interface
-    void receive() override;
-    void receive_command(const CommandPtr p_command) override;
+    CommandPtr receive() override;
     std::string Serialize(const CommandPtr p_command) override;
 
 protected:
